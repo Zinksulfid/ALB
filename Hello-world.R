@@ -5,3 +5,5 @@ if(askYesNo("Are you ALB?") == TRUE){
 }
 a <- 3
 a==7
+
+if(a == 3) { "That's the solution!"}
