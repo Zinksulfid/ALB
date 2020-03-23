@@ -20,6 +20,7 @@ rownames(d) <- c( "genotype", "transcriptlevel")
 pp <- ggplot(d, aes(x = "genotype", y = "transcriptlevel")) +
   geom_bar()
 pp
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
@@ -43,14 +44,14 @@ pplot +
 
 #according to template
 ddf <- data.frame(
-  time = c("NFS1", "NFS1", "NFS1", "NFS1", "NFS1", "ISCU", "ISCU", "ISCU", "ISCU", "ISCU"),
-  group = c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F"),
-  mean  = c(1.000, 115.162, 71.477, 55.136, 66.766, 1.000, 0.865, 0.838, 0.956, 1.350),
-  se    = c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296, 0.17972206, 0.046230542, 0,387379952
+  primer = c("NFS1", "NFS1", "NFS1", "NFS1", "NFS1", "ISCU", "ISCU", "ISCU", "ISCU", "ISCU"),
+  genotype = c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F"),
+  transcriptlevel  = c(1.000, 115.162, 71.477, 55.136, 66.766, 1.000, 0.865, 0.838, 0.956, 1.350),
+  se    = c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296, 0.17972206, 0.046230542, 0.387379952,
             0.183992176, 0.133365007)
   # package ggplot2 has to be loaded
   # create a plot object, define dataframe to use, add gender to differ in colour already in base plot
-  pplot <- ggplot(ddf, x=group, y=mean, aes(group, mean, fill = time)
+  pplot <- ggplot(ddf, x=genotype, y=transcriptlevel, aes(genotype, transcriptlevel, fill = primer)
                   
                   # create a bar plot
                   pplot +
