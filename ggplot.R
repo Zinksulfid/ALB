@@ -67,6 +67,54 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
  scale_fill_brewer( type = "seq", palette = 1, direction = 1, aesthetics = "fill" )
 
+# lösung für nfs1
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1.000, 115.162, 71.477, 55.136, 66.766)
+e <- c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296)
+d <- cbind(a,b,e) # Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$se <- as.numeric(as.character(d$se))
+
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
+  
+# lösung für iron
+
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1,	1.113059025,	0.987477587,	0.924865842,	0.513058988)
+e <- c(0.163055447,	0.110694525,	0.140618712,	0.273389083,	0.249686538)
+f <- cbind(a,b)
+d <- cbind(f,e)# Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$se <- d$se <- as.numeric(as.character(d$se))
+
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
