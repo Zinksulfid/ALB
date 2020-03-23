@@ -30,7 +30,23 @@ d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
 ggplot(d, aes(x = genotype, y = transcriptlevel)) +
   geom_bar(stat="identity", position=position_dodge())
 
+# weiterarbeit an farbe und errorbalken
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1.000, 115.162, 71.477, 55.136, 66.766)
+e <- c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296)
+d <- cbind(a,b,e) # Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$se <- factor(d$se, level = c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296))
 
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
 # template
 ddf <- data.frame(
