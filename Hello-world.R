@@ -49,7 +49,9 @@ ddf <- data.frame(
   transcriptlevel  = c(1.000, 115.162, 71.477, 55.136, 66.766, 1.000, 0.865, 0.838, 0.956, 1.350),
   se    = c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296, 0.17972206, 0.046230542, 0.387379952,
             0.183992176, 0.133365007)
+  )
   # package ggplot2 has to be loaded
+  require ("ggplot2")
   # create a plot object, define dataframe to use, add gender to differ in colour already in base plot
   pplot <- ggplot(ddf, x=genotype, y=transcriptlevel, aes(genotype, transcriptlevel, fill = primer)
                   
