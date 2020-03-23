@@ -48,6 +48,23 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
+#analog für iron-test (gleiche funktion mit anderen Werten)
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1,	1.113059025,	0.987477587,	0.924865842,	0.513058988)
+e <- c(0.163055447,	0.110694525,	0.140618712,	0.273389083,	0.249686538)
+d <- cbind(a,b,e) # Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$se <- factor(d$se, level = c(0.163055447,	0.110694525,	0.140618712,	0.273389083,	0.249686538))
+
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
