@@ -1,22 +1,34 @@
 install.packages("ggplot2")
 library("ggplot2")
 # erster Versuch 
+
 a <- c("wt", "OE", "Flag", "K", "F")
 b <- c(1.000, 115.162, 71.477, 55.136, 66.766)
 d <- rbind(a,b)
+d <- data.frame(d)
 colnames(d) <- a
 rownames(d) <- c( "genotype", "transcriptlevel")
-d <- t(d)  ## Die Tabelle hat die verkehrte Orientierung für ggplot, aes bezieht sich auf Spalten, hier hast du aber Zeilen. Deswegen transformiere ich mit t(d), das ändert die Orientierung
+pp <- ggplot(d, aes(x = "genotype", y = "transcriptlevel")) +
+  geom_bar()
+pp
+
+# (1) Ich hab rausgenommen, dass der ggplot in pp gespeichert wird und man das separat wieder auslesen muss. Das kann man später machen, wenn der Code funktioniert, gerade ist das zu umständlich
+# (2) Wie du siehst, sind die Genotypen nicht in der richtigen Reihenfolge. Das kann man theoretisch mit factor(d$genotype, levels = d$genotype) lösen
+# (3) Auch die Zahlen sind nicht fließend abgebildet, sondern scheinbar als Faktor eingelesen. Das kannst du überprüfen, indem du str(d) laufen lässt. Aha, d$transcriptlevel ist tatsächlich ein Faktor. Mach daraus eine Zahlenreihe mit as.numeric(as.character(x))
+
+# Daraus ergibt sich folgender Lösungsvorschlag
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1.000, 115.162, 71.477, 55.136, 66.766)
+d <- cbind(a,b) # Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel") # Hier dementsprechend geändert
 d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
 
 ggplot(d, aes(x = genotype, y = transcriptlevel)) +
   geom_bar(stat="identity", position=position_dodge())
-
-# (1) Ich hab rausgenommen, dass der ggplot in pp gespeichert wird und man das separat wieder auslesen muss. Das kann man später machen, wenn der Code funktioniert, gerade ist das zu umständlich
-# (2) Wie du siehst, sind die Genotypen nicht in der richtigen Reihenfolge. Das kann man theoretisch mit as.vector(d$genotype, levels = d$genotype) lösen
-# (3) Auch die Zahlen sind nicht fließend abgebildet, sondern scheinbar als Faktor eingelesen. Das kannst du überprüfen, indem du str(d) laufen lässt. Aha, d$transcriptlevel ist tatsächlich ein Faktor. Mach daraus eine Zahlenreihe mit as.numeric(as.character(x))
-
-
 
 
 
