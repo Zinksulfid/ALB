@@ -46,6 +46,7 @@ d$se <- factor(d$se, level = c(0.084344263, 2.142360052, 13.36486933, 2.24410396
 
 ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
+ scale_fill_brewer( type = "seq", palette = 1, direction = 1, aesthetics = "fill" )+
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
 #analog für iron-test (gleiche funktion mit anderen Werten)
@@ -63,7 +64,8 @@ d$se <- factor(d$se, level = c(0.163055447,	0.110694525,	0.140618712,	0.27338908
 
 
 ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
-  geom_bar(stat="identity", position=position_dodge())
+  geom_bar(stat="identity", position=position_dodge())+
+ scale_fill_brewer( type = "seq", palette = 1, direction = 1, aesthetics = "fill" )
 
 # template
 ddf <- data.frame(
