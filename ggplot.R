@@ -146,6 +146,29 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
 facet_wrap( ~ primer, ncol=2, scales="free")+
 theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
 
+#gleiches script mit einlesen 
+
+d <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$primer <- factor(d$primer, level = c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "QTZL", "Qtzl", "Qtzl", "Qtzl", "Qtzl"))
+d$se <- d$se <- as.numeric(as.character(d$se))
+
+cairo_pdf("qPCR_primer.pdf", 12, 7)
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
+  facet_wrap( ~ primer, ncol=2, scales="free") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+dev.off()
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
