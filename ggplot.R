@@ -184,6 +184,47 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
 dev.off()
 
+#signifikanzen einzeichnen: versuch an NFS1 script 
+a <- c("wt", "OE", "Flag", "K", "F")
+b <- c(1.000, 115.162, 71.477, 55.136, 66.766)
+e <- c(0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296)
+d <- cbind(a,b,e) # Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$se <- as.numeric(as.character(d$se))
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
+  geom_signif(comparisons = list(c("wt", "OE")), test=t.test,
+              map_signif_level=TRUE)
+
+#versuch mit allen Datenpunkten (ohne fehlerbalken etc. als experiment)
+a <- c("wt","wt","wt", "OE", "OE", "OE", "Flag", "Flag","Flag","K","K","K", "F","F","F")
+b <- c(0.797, 1.070, 1.134, 118.873, 114.656, 111.451, 48.328, 94.625, 2.148, 55.751, 50.099,
+       59.560, 66.203, 70.395, 63.698)
+d <- cbind(a,b)
+colnames(d) <- c( "genotype", "transcriptlevel")
+d <- data.frame(d)
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  stat_summary(fun="mean", geom="bar")+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  #geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
+  geom_signif(comparisons = list(c("wt", "OE")), test=t.test,
+              map_signif_level=TRUE)
 
 # template
 ddf <- data.frame(
