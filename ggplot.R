@@ -115,6 +115,35 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
     aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
+# plot für andere primer (Qtzl, LYRMA4, ISCU)
+genotype <- c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F")
+transcriptlevel <- c(1.000, 0.865, 0.838, 0.956, 1.350, 1.000, 45.601, 37.844, 0.809, 0.955, 1.000, 0,898
+                     0.698, 1.041, 1.027)
+se <- c(0.17972206, 0.046230542, 0.387379952, 0.183992176, 0.133365007, 0.203818635,
+       3.312987884, 11.61584221, 0.003496234, 0.131513385, 0.179068215, 0.060578249, 0.281034778,
+       0.138713883, 0.111072547)
+primer <- c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4")
+f <- cbind(genotype,primer)
+h<- cbind(f,transcriptlevel)
+d <- cbind(h,se)# Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
+# colnames(d) <- a # Brauchts nicht unbedingt
+colnames(d) <- c( "genotype", "transcriptlevel", "se") # Hier dementsprechend geändert
+d <- data.frame(d)
+str(d)
+d$transcriptlevel <- as.numeric(as.character(d$transcriptlevel))
+d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
+d$primer <- factor(d$primer, level = c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "QTZL", "Qtzl", "Qtzl", "Qtzl", "Qtzl"))
+d$se <- d$se <- as.numeric(as.character(d$se))
+
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=primer)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(
+    type = "seq",
+    palette = 3,
+    direction = 1,
+    aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
