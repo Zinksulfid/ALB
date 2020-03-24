@@ -135,14 +135,15 @@ d$genotype <- factor(d$genotype, level = c("wt", "OE", "Flag", "K", "F"))
 d$primer <- factor(d$primer, level = c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "QTZL", "Qtzl", "Qtzl", "Qtzl", "Qtzl"))
 d$se <- d$se <- as.numeric(as.character(d$se))
 
-ggplot(d, aes(x = genotype, y = transcriptlevel, fill=primer)) +
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
   scale_fill_brewer(
     type = "seq",
     palette = 3,
     direction = 1,
     aesthetics = "fill" ) + 
-  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
+facet_wrap( ~ primer, ncol=3, scales="free")
 
 # template
 ddf <- data.frame(
