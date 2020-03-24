@@ -115,7 +115,7 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
     aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
-# plot für andere primer (Qtzl, LYRMA4, ISCU)
+# plot für andere primer (Qtzl, LYRMA4, ISCU, NFS1)
 genotype <- c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F")
 transcriptlevel <- c(1.000, 0.865, 0.838, 0.956, 1.350, 1.000, 45.601, 37.844, 0.809, 0.955, 1.000, 0,898
                      0.698, 1.041, 1.027, 1.000, 115.162, 71.477, 55.136, 66.766)
@@ -143,7 +143,8 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
     direction = 1,
     aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
-facet_wrap( ~ primer, ncol=3, scales="free")
+facet_wrap( ~ primer, ncol=2, scales="free")+
+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
 
 # template
 ddf <- data.frame(
