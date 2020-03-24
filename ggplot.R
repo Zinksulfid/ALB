@@ -169,6 +169,22 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
 dev.off()
 
+#relvel-function zum sortieren
+d <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+d <- data.frame(d)
+data %>% 
+  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "OE", "Flag", "K", "F")) %>%
+
+cairo_pdf("qPCR_primer.pdf", 12, 7)
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())+
+  facet_wrap( ~ primer, ncol=2, scales="free") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+dev.off()
+
+
 # template
 ddf <- data.frame(
   time  = c("t1", "t2", "t1", "t2"),
