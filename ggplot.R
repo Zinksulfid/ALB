@@ -116,13 +116,13 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge())
 
 # plot für andere primer (Qtzl, LYRMA4, ISCU)
-genotype <- c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F")
+genotype <- c("wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F", "wt", "OE", "Flag", "K", "F")
 transcriptlevel <- c(1.000, 0.865, 0.838, 0.956, 1.350, 1.000, 45.601, 37.844, 0.809, 0.955, 1.000, 0,898
-                     0.698, 1.041, 1.027)
+                     0.698, 1.041, 1.027, 1.000, 115.162, 71.477, 55.136, 66.766)
 se <- c(0.17972206, 0.046230542, 0.387379952, 0.183992176, 0.133365007, 0.203818635,
        3.312987884, 11.61584221, 0.003496234, 0.131513385, 0.179068215, 0.060578249, 0.281034778,
-       0.138713883, 0.111072547)
-primer <- c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4")
+       0.138713883, 0.111072547, 0.084344263, 2.142360052, 13.36486933, 2.244103961, 1.595136296)
+primer <- c("ISCU", "ISCU", "ISCU", "ISCU", "ISCU", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "Qtzl", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4", "LYRMA4", "NFS1", "NFS1", "NFS1", "NFS1", "NFS1")
 f <- cbind(genotype,primer)
 h<- cbind(f,transcriptlevel)
 d <- cbind(h,se)# Beachte, hier cbind statt rbind, weil ggplot in Spalten und nicht Zeilen arbeitet.
