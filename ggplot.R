@@ -266,31 +266,49 @@ ddf <- data.frame(
                     geom_point(stat="identity", shape=21, size=5, position=position_dodge(width=0.7))
                   
 #finale_lösung NFS1:
-                  e <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
-e <- data.frame(e)
-d <- subset(e, primer=="NFS1")
-d %>% 
-  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "OE", "Flag", "K", "F")) -> d
-                  cairo_pdf("qPCR_primer.pdf", 12, 7)
-ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+data_script <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+data_frame <- data.frame(data_script)
+colnames(data_frame) <- c( "genotype","primer", "transcriptlevel", "se")
+data <- subset(data_frame, primer=="NFS1")
+data %>% 
+  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "oe", "Flag", "K", "F")) -> data
+cairo_pdf("qPCR_NFS1.pdf", 12, 7)
+ggplot(data, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
   scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge(), width=0.4)
-                  dev.off()
-                  
-                  
-                  
-                  
- # Lösung_final Iron
-                                    e <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
-e <- data.frame(e)
-d <- subset(e, primer=="IRON")
-d %>% 
-  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "OE", "Flag", "K", "F")) -> d
-                  cairo_pdf("qPCR_primer.pdf", 12, 7)
-ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+dev.off()
+
+
+
+
+# Lösung_final Iron
+data_script <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+data_frame <- data.frame(data_script)
+colnames(data_frame) <- c( "genotype","primer", "transcriptlevel", "se")
+data <- subset(data_frame, primer=="IRON")
+data %>% 
+  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "oe", "Flag", "K", "F")) -> data
+cairo_pdf("iron_content.pdf", 12, 7)
+ggplot(data, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   geom_bar(stat="identity", position=position_dodge())+
   scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge(), width=0.4)+             
-                  ylab("iron content [arbitrary units]")
-                  dev.off()
+  ylab("iron content [arbitrary units]")
+dev.off()
+
+#Lösung_final qPCR
+data_script <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+data_frame <- data.frame(data_script)
+colnames(data_frame) <- c( "genotype","primer", "transcriptlevel", "se")
+data <- subset(data_frame, primer!="IRON")
+data %>% 
+  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "oe", "Flag", "K", "F")) -> data 
+cairo_pdf("qPCR_primer.pdf", 12, 7)
+ggplot(data, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge(), width=0.5)+
+  facet_wrap( ~ primer, ncol=2, scales="free") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+dev.off()
