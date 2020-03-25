@@ -277,3 +277,20 @@ ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
   scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
   geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge(), width=0.4)
                   dev.off()
+                  
+                  
+                  
+                  
+ # Lösung_final Iron
+                                    e <-read.csv("daten_zsf.csv", header = TRUE, sep = ";")
+e <- data.frame(e)
+d <- subset(e, primer=="IRON")
+d %>% 
+  dplyr::mutate(genotype = fct_relevel(genotype, "wt", "OE", "Flag", "K", "F")) -> d
+                  cairo_pdf("qPCR_primer.pdf", 12, 7)
+ggplot(d, aes(x = genotype, y = transcriptlevel, fill=genotype)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
+  geom_errorbar(aes(ymax = transcriptlevel + se, ymin= transcriptlevel - se), position = position_dodge(), width=0.4)+             
+                  ylab("iron content [arbitrary units]")
+                  dev.off()
