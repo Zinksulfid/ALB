@@ -59,24 +59,20 @@ data_final <- subset(data, Gene.names == "CG12264")
 #mittelwerte berechnen
 data_final %>%
   select(starts_with("LFQ.intensity.wt")) -> wt 
-  wt<-log2(wt)
-  mean_wt <-rowMeans(wt)
-  sd_wt <-apply(wt, 1, sd)
+  mean_wt <-log2(rowMeans(wt))
+  sd_wt <-log2(apply(wt, 1, sd))
 data_final %>%
   select(starts_with("LFQ.intensity.FLAG")) -> FLAG
-  FLAG <- log2(FLAG)
-  mean_FLAG <-rowMeans(FLAG)
-  sd_FLAG <-apply(FLAG, 1, sd)
+  mean_FLAG <-log2(rowMeans(FLAG))
+  sd_FLAG <-log2(apply(FLAG, 1, sd))
 data_final %>%
   select(starts_with("LFQ.intensity.K")) -> K
-  K <- log2(K)
-  mean_K <-rowMeans(K)
-  sd_K <-apply(K, 1, sd)
+  mean_K <-log2(rowMeans(K))
+  sd_K <-log2(apply(K, 1, sd))
 data_final %>%
-  select(starts_with("LFQ.intensity.wt")) -> F 
-  F <- log2(F)
-  mean_F <-rowMeans(F)
-  sd_F <-apply(F,1,sd)
+  select(starts_with("LFQ.intensity.F")) -> F 
+  mean_F <-log2(rowMeans(F))
+  sd_F <-log2(apply(F,1,sd))
 
 genotype<- c("wt", "FLAG", "K", "F")
 mean <- c(mean_wt, mean_FLAG, mean_K, mean_F)
@@ -89,7 +85,6 @@ data_plot$sd <- as.numeric(as.character(data_plot$sd))
 
 #plotten
 ggplot(data_plot, aes(x = genotype, y = mean)) +
-  scale_y_log10(data_plot)+
   
   geom_bar(stat="identity", position=position_dodge())+
   
