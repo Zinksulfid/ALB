@@ -42,3 +42,50 @@ plot_heatmap(dep, type = "centered", kmeans = TRUE,
 plot_heatmap(dep, type = "contrast", kmeans = TRUE, 
              k = 6, col_limit = 10, show_row_names = FALSE)
 plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
+
+#barplots
+plot_single(dep, proteins = "CG12264", type = "centered")
+plot_single(data_se, proteins = "CG12264", type = "centered")
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("stats")
+library(stats)
+#daten auslesen
+LFQ_columns <- grep("LFQ.", colnames(data_unique))
+data_unique %>%
+  select(Gene.names) -> data_lfq
+data <- cbind(data_unique[LFQ_columns], data_lfq)
+data_final <- subset(data, Gene.names == "CG12264")
+#mittelwerte berechnen
+data_final %>%
+  select(starts_with("LFQ.intensity.wt")) -> wt 
+  mean_wt <-rowMeans(wt)
+  sd_wt <-apply(wt, 1, sd)
+data_final %>%
+  select(starts_with("LFQ.intensity.FLAG")) -> FLAG
+  mean_FLAG <-rowMeans(FLAG)
+  sd_FLAG <-apply(FLAG, 1, sd)
+data_final %>%
+  select(starts_with("LFQ.intensity.K")) -> K 
+  mean_K <-rowMeans(K)
+  sd_K <-apply(K, 1, sd)
+data_final %>%
+  select(starts_with("LFQ.intensity.wt")) -> F 
+  mean_F <-rowMeans(F)
+  sd_F <-apply(F,1,sd)
+
+genotype<- c("wt", "FLAG", "K", "F")
+mean <- c(mean_wt, mean_FLAG, mean_K, mean_F)
+sd <- c(sd_wt, sd_FLAG, sd_K, sd_F)
+data_plot <- cbind(genotype, mean, sd)
+
+#plotten
+ggplot(data_plot, aes(x = genotype, y = mean)) +
+  
+  geom_bar(stat="identity", position=position_dodge())+
+  
+  scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
+  
+  geom_errorbar(aes(ymax = mean + sd, ymin= mean - sd), position = position_dodge(), width=0.4) 
+  
+
