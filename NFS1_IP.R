@@ -85,6 +85,7 @@ data_plot$sd <- as.numeric(as.character(data_plot$sd))
 
 #plotten
 ggplot(data_plot, aes(x = genotype, y = mean)) +
+
   
   geom_bar(stat="identity", position=position_dodge())+
   
