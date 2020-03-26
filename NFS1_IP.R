@@ -77,7 +77,11 @@ data_final %>%
 genotype<- c("wt", "FLAG", "K", "F")
 mean <- c(mean_wt, mean_FLAG, mean_K, mean_F)
 sd <- c(sd_wt, sd_FLAG, sd_K, sd_F)
-data_plot <- cbind(genotype, mean, sd)
+data_plot_vektor <- cbind(genotype, mean, sd)
+data_plot<-data.frame(data_plot_vektor)
+d$mean <- as.numeric(as.character(d$mean))
+d$genotype <- factor(d$genotype, level = c("wt", "Flag", "K", "F"))
+d$sd <- as.numeric(as.character(d$sd))
 
 #plotten
 ggplot(data_plot, aes(x = genotype, y = mean)) +
@@ -88,4 +92,3 @@ ggplot(data_plot, aes(x = genotype, y = mean)) +
   
   geom_errorbar(aes(ymax = mean + sd, ymin= mean - sd), position = position_dodge(), width=0.4) 
   
-
