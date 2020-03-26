@@ -46,10 +46,10 @@ plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
 #barplots
 plot_single(dep, proteins = "CG12264", type = "centered")
 plot_single(data_se, proteins = "CG12264", type = "centered")
-install.packages("ggplot2")
-library(ggplot2)
-install.packages("stats")
-library(stats)
+#install.packages("ggplot2")
+#library(ggplot2)
+#install.packages("stats")
+#library(stats)
 #daten auslesen
 LFQ_columns <- grep("LFQ.", colnames(data_unique))
 data_unique %>%
@@ -59,18 +59,22 @@ data_final <- subset(data, Gene.names == "CG12264")
 #mittelwerte berechnen
 data_final %>%
   select(starts_with("LFQ.intensity.wt")) -> wt 
+  wt<-log2(wt)
   mean_wt <-rowMeans(wt)
   sd_wt <-apply(wt, 1, sd)
 data_final %>%
   select(starts_with("LFQ.intensity.FLAG")) -> FLAG
+  FLAG <- log2(FLAG)
   mean_FLAG <-rowMeans(FLAG)
   sd_FLAG <-apply(FLAG, 1, sd)
 data_final %>%
-  select(starts_with("LFQ.intensity.K")) -> K 
+  select(starts_with("LFQ.intensity.K")) -> K
+  K <- log2(K)
   mean_K <-rowMeans(K)
   sd_K <-apply(K, 1, sd)
 data_final %>%
   select(starts_with("LFQ.intensity.wt")) -> F 
+  F <- log2(F)
   mean_F <-rowMeans(F)
   sd_F <-apply(F,1,sd)
 
@@ -79,16 +83,16 @@ mean <- c(mean_wt, mean_FLAG, mean_K, mean_F)
 sd <- c(sd_wt, sd_FLAG, sd_K, sd_F)
 data_plot_vektor <- cbind(genotype, mean, sd)
 data_plot<-data.frame(data_plot_vektor)
-d$mean <- as.numeric(as.character(d$mean))
-d$genotype <- factor(d$genotype, level = c("wt", "Flag", "K", "F"))
-d$sd <- as.numeric(as.character(d$sd))
+data_plot$mean <- as.numeric(as.character(data_plot$mean))
+data_plot$genotype <- factor(data_plot$genotype, level = c("wt", "FLAG", "K", "F"))
+data_plot$sd <- as.numeric(as.character(data_plot$sd))
 
 #plotten
 ggplot(data_plot, aes(x = genotype, y = mean)) +
+  scale_y_log10(data_plot)+
   
   geom_bar(stat="identity", position=position_dodge())+
   
   scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
   
   geom_errorbar(aes(ymax = mean + sd, ymin= mean - sd), position = position_dodge(), width=0.4) 
-  
