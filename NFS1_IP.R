@@ -92,3 +92,29 @@ ggplot(data_plot, aes(x = genotype, y = mean)) +
   scale_fill_brewer(type = "seq", palette = 3, direction = 1, aesthetics = "fill" ) + 
   
   geom_errorbar(aes(ymax = mean + sd, ymin= mean - sd), position = position_dodge(), width=0.4) 
+
+data_final %>%
+  select(starts_with("LFQ.intensity.wt")) -> wt_LFQ
+data_final %>%
+  select(starts_with("intensity.wt"))  -> wt
+data_final %>%
+  select(starts_with("LFQ.intensity.K")) -> K_LFQ
+data_final %>%
+  select(starts_with("intensity.K"))  -> K
+data_final %>%
+  select(starts_with("LFQ.intensity.FLAG")) -> FLAG_LFQ
+data_final %>%
+  select(starts_with("intensity.FLAG"))  -> FLAG 
+# hier manuell übertragen!
+x_data <- c(6266100000,        3552700000,        7829100000,        5912300000, 
+            7865600000,       8293500000,       2.1979e+10,       1.8967e+10,
+            9054900000, 8279800000, 1.6293e+10, 2.1106e+10)
+y_data <- c(6.906e+09,    4070100000,     7.908e+09,    4686900000,
+            1.1925e+10,    8.662e+09,   1.9115e+10,   1.7939e+10,
+            7455500000, 7222200000, 1.5766e+10, 1.5468e+10)
+genotyp <-("wt", "wt", "K", "K", "FLAG", "FLAG")
+data <- cbind(x_data, y_data, genotyp)
+data_plot <-data.frame(data)
+data_plot <- colnames("FLAG_LFQ_Data", "FLAG_Data")
+ggplot(data_plot, aes(x = "FLAG_LFQ_Data", y = "FLAG_Data"), fill=genotyp)+ 
+  geom_jitter()
