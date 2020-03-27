@@ -93,6 +93,7 @@ ggplot(data_plot, aes(x = genotype, y = mean)) +
   
   geom_errorbar(aes(ymax = mean + sd, ymin= mean - sd), position = position_dodge(), width=0.4) 
 
+#plotten für LFQ gegen intensitäten
 data_final %>%
   select(starts_with("LFQ.intensity.wt")) -> wt_LFQ
 data_final %>%
@@ -112,7 +113,7 @@ x_data <- c(6266100000,        3552700000,        7829100000,        5912300000,
 y_data <- c(6.906e+09,    4070100000,     7.908e+09,    4686900000,
             1.1925e+10,    8.662e+09,   1.9115e+10,   1.7939e+10,
             7455500000, 7222200000, 1.5766e+10, 1.5468e+10)
-genotyp <-("wt", "wt", "K", "K", "FLAG", "FLAG")
+genotyp <-c("wt", "wt", "wt", "Wt", "K", "K", "K", "K", "FLAG", "FLAG", "FLAG", "FLAG")
 data <- cbind(x_data, y_data, genotyp)
 data_plot <-data.frame(data)
 data_plot <- colnames("FLAG_LFQ_Data", "FLAG_Data")
