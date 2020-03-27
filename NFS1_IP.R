@@ -119,3 +119,26 @@ data_plot <-data.frame(data)
 colnames(data_plot)<- c("FLAG_LFQ_Data", "FLAG_Data")
 ggplot(data_plot, aes(x = "FLAG_LFQ_Data", y = "FLAG_Data"), fill=genotyp)+ 
   geom_jitter()
+
+
+# alle werte plotten mit facet_wrap
+proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
+data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
+dim(data)
+colnames(data)
+data$Gene.names %>% duplicated() %>% any()
+data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>% 
+  arrange(desc(frequency)) %>% filter(frequency > 1)
+data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
+data$name %>% duplicated() %>% any()
+LFQ <- grep("LFQ.", colnames(data_unique))
+intensity <- grep("intensity.", colnames(data_unique))
+data_vgl <- cbind(data_unique[LFQ],data_unique[intensity])#
+data_plot <- data.frame(data_vgl)
+colnames(data_plot) <- cbind(rep("LFQ", 16), rep("intens",16))
+
+ggplot(data_plot, aes(x = LFQ, y = intens)) +
+  geom_point()+
+  geom_abline()+
+  facet_wrap( ~ primer, ncol=4, scales="free") 
+  
