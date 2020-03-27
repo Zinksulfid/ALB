@@ -138,18 +138,19 @@ LFQ <- grep("LFQ.", colnames(data_unique))
 data_LFQ <- cbind(data_unique[LFQ], data_unique["Protein.IDs"])
 data_LFQ %>%
   gather( "S1", "LFQ", 1:16) -> dLFQ
-#replace <- 
-#dLFQ <- str_replace(dLFQ[S1],)
+
 dLFQ %>%
-  mutate(ID.unique = paste(Protein.IDs, S1)) -> dL
+  mutate(ID.unique = paste(Protein.IDs, 
+                           str_replace(S1, "LFQ\\.intensity\\.", ""))) -> dL #### Flo: Änderung 1
 
 intensity <- grep("Intensity.", colnames(data_unique))
 data_intense <- cbind(data_unique[intensity], data_unique["Protein.IDs"])
 data_intense %>%
   gather( "sample", "intense", 1:16) -> dint
-#dint <- str_replace(dLFQ[S1],)
+
 dint %>%
-  mutate(ID.unique = paste(Protein.IDs,sample)) -> dI
+  mutate(ID.unique = paste(Protein.IDs, 
+                           str_replace(sample, "Intensity\\.", ""))) -> dI #### Flo: Änderung 2
 
 data_plot <- full_join(dL, dI, by="ID.unique")
 
