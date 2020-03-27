@@ -113,9 +113,9 @@ x_data <- c(6266100000,        3552700000,        7829100000,        5912300000,
 y_data <- c(6.906e+09,    4070100000,     7.908e+09,    4686900000,
             1.1925e+10,    8.662e+09,   1.9115e+10,   1.7939e+10,
             7455500000, 7222200000, 1.5766e+10, 1.5468e+10)
-genotyp <-c("wt", "wt", "wt", "Wt", "K", "K", "K", "K", "FLAG", "FLAG", "FLAG", "FLAG")
+genotyp <-c(rep("wt", length(x_data)/3),rep("K", length(x_data)/3),rep("FLAG", length(x_data)/3))
 data <- cbind(x_data, y_data, genotyp)
 data_plot <-data.frame(data)
-data_plot <- colnames("FLAG_LFQ_Data", "FLAG_Data")
+colnames(data_plot)<- c("FLAG_LFQ_Data", "FLAG_Data")
 ggplot(data_plot, aes(x = "FLAG_LFQ_Data", y = "FLAG_Data"), fill=genotyp)+ 
   geom_jitter()
