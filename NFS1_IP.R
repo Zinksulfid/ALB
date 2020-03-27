@@ -124,10 +124,11 @@ ggplot(data_plot, aes(x = "FLAG_LFQ_Data", y = "FLAG_Data"), fill=genotyp)+
 # alle werte plotten mit facet_wrap
 library("DEP")
 library("dplyr")
+library("ggplot2")
+library("stringr")
 proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
 data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
-dim(data)
-colnames(data)
+
 data$Gene.names %>% duplicated() %>% any()
 data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>% 
   arrange(desc(frequency)) %>% filter(frequency > 1)
@@ -136,20 +137,23 @@ data$name %>% duplicated() %>% any()
 LFQ <- grep("LFQ.", colnames(data_unique))
 data_LFQ <- cbind(data_unique[LFQ], data_unique["Protein.IDs"])
 data_LFQ %>%
-  gather( "sample", "LFQ", 1:16) -> dLFQ
+  gather( "S1", "LFQ", 1:16) -> dLFQ
+#replace <- 
+#dLFQ <- str_replace(dLFQ[S1],)
 dLFQ %>%
-  mutate(ID.unique = paste(Protein.IDs,sample)) -> dL
+  mutate(ID.unique = paste(Protein.IDs, S1)) -> dL
 
-intensity <- grep("intensity.", colnames(data_unique))
+intensity <- grep("Intensity.", colnames(data_unique))
 data_intense <- cbind(data_unique[intensity], data_unique["Protein.IDs"])
 data_intense %>%
   gather( "sample", "intense", 1:16) -> dint
+#dint <- str_replace(dLFQ[S1],)
 dint %>%
   mutate(ID.unique = paste(Protein.IDs,sample)) -> dI
 
-full_join(dL, dI, by="ID.unique")
+data_plot <- full_join(dL, dI, by="ID.unique")
 
-ggplot(data_plot, aes(x = LFQ, y = intens, shape=Proteins.ID)) +
+ggplot(data_plot, aes(x = LFQ, y = intense)) +
   geom_point()+
   geom_abline()+
   facet_wrap( ~ sample, ncol=4, scales="free") 
