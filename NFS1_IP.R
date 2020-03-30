@@ -206,21 +206,22 @@ d_LFQ %>%
 colnames(data_F) <- c("LFQ", "NFS1", "Protein")
     
 
- 
-
-
-model_wt <- lm("NFS1" ~ "Protein", data_wt)
+ model_wt <- lm(NFS1 ~ Protein, data= data_wt)
 R_wt<-summary(model_wt)$r.squared
-model_FLAG <- lm("NFS1" ~ "Protein", data_FLAG)
+model_FLAG <- lm(NFS1 ~ Protein, data_FLAG)
 R_FLAG<-summary(model_FLAG)$r.squared
-model_K <- lm("NFS1" ~ "Protein", data_K)
+model_K <- lm(NFS1 ~ Protein, data_K)
 R_K<-summary(model_K)$r.squared
-model_F <- lm("NFS1" ~ "Protein", data_F)
+model_F <- lm(NFS1 ~ Protein, data_F)
 R_F<-summary(model_F)$r.squared
 
-R<- cbind(R_wt, R_FLAG, R_K, R_F)
-R_values <- data.frame(R)
-colnames(R) <- c("R^2_wt", "R^2_FLAG", "R^2_K", "R^2_F")
+vec <- c(R_wt, R_FLAG, R_K, R_F)
+R <- mean(vec)
+R_values <- data.frame(1)
+colnames(R_values) <- c("summ of R^2")
+R_values<- cbind(R)
+
+
 
 
 
