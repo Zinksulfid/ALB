@@ -267,6 +267,30 @@ housekeeping <- function (zeile) {
   return(mean_R)
 }
 
+#+ zugehöriges script
+proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
+data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
+
+data$Gene.names %>% duplicated() %>% any()
+data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>% 
+  arrange(desc(frequency)) %>% filter(frequency > 1)
+data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
+data$name %>% duplicated() %>% any()
+LFQ <- grep("LFQ.", colnames(data_unique))
+data_LFQ <- cbind(data_unique["Majority.protein.IDs"], data_unique[LFQ])
+data_LFQ[data_LFQ == 0] <- NA
+d_LFQ <- drop_na(data_LFQ)
+R_values <- data.frame(1)
+
+for(i in 1:10){
+  d<-d_LFQ[i,]
+  zeile <- d["Majority.protein.IDs"]
+  #print(zeile)
+housekeeping(zeile)
+R_values <- cbind(mean_R)
+  }
+#hier dann noch vgl. nach 5 größten Werten in R_values
+
 
 
 
