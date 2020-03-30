@@ -287,7 +287,7 @@ for(i in 1:10){
   zeile <- d["Majority.protein.IDs"]
   #print(zeile)
 housekeeping(zeile)
-R_values <- cbind(mean_R)
+R_values <- rbind(mean_R)
   }
 
 # vorschlag fürs filtern der größten 5
