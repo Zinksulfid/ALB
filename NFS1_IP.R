@@ -222,6 +222,51 @@ colnames(R_values) <- c("summ of R^2")
 R_values<- cbind(R)
 
 
+# housekeeping als funktion
+
+housekeeping <- function (zeile) {
+  d_LFQ %>% 
+    select(matches(".wt.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("protein", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_wt
+  colnames(data_wt) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".FLAG.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_FLAG
+  colnames(data_FLAG) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".K.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_K
+  colnames(data_K) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches("F.$") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4)%>%
+    spread("Majority.protein.IDs", "CG12264") -> data_F
+  colnames(data_F) <- c("LFQ", "NFS1", "Protein")
+  
+  
+  model_wt <- lm(NFS1 ~ Protein, data= data_wt)
+  R_wt<-summary(model_wt)$r.squared
+  model_FLAG <- lm(NFS1 ~ Protein, data_FLAG)
+  R_FLAG<-summary(model_FLAG)$r.squared
+  model_K <- lm(NFS1 ~ Protein, data_K)
+  R_K<-summary(model_K)$r.squared
+  model_F <- lm(NFS1 ~ Protein, data_F)
+  R_F<-summary(model_F)$r.squared
+  
+  vec <- c(R_wt, R_FLAG, R_K, R_F)
+  mean_R <- mean(vec)
+  
+  
+  return(mean_R)
+}
+
 
 
 
