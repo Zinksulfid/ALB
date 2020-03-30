@@ -158,4 +158,22 @@ ggplot(data_plot, aes(x = LFQ, y = intense)) +
   geom_point()+
   geom_abline()+
   facet_wrap( ~ sample, ncol=4, scales="free") 
+
+#housekeepinggenes
+
+library("dplyr")
+library("ggplot2")
+library("DEP")
+proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
+data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
+
+data$Gene.names %>% duplicated() %>% any()
+data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>% 
+  arrange(desc(frequency)) %>% filter(frequency > 1)
+data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
+data$name %>% duplicated() %>% any()
+cairo_pdf("proteins.pdf")
+Proteins=data_unique["Protein.IDs"]
+dev.off()
+is.element("Q9VY92", Proteins) # dieser befehl funktioniert nicht - gibt ergebnis aus, aber das ist falsch!
   
