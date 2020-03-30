@@ -289,7 +289,11 @@ for(i in 1:10){
 housekeeping(zeile)
 R_values <- cbind(mean_R)
   }
-#hier dann noch vgl. nach 5 größten Werten in R_values
+
+# vorschlag fürs filtern der größten 5
+
+R_values <- sort(decreasing = TRUE)
+R_values[1:5]
 
 
 
