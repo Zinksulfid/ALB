@@ -164,6 +164,7 @@ ggplot(data_plot, aes(x = LFQ, y = intense)) +
 library("dplyr")
 library("ggplot2")
 library("DEP")
+library("tidyr")
 proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
 data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
 
@@ -172,8 +173,41 @@ data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>%
   arrange(desc(frequency)) %>% filter(frequency > 1)
 data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
 data$name %>% duplicated() %>% any()
-cairo_pdf("proteins.pdf")
-Proteins=data_unique["Protein.IDs"]
-dev.off()
-is.element("Q9VY92", Proteins) # dieser befehl funktioniert nicht - gibt ergebnis aus, aber das ist falsch!
+LFQ <- grep("LFQ.", colnames(data_unique))
+data_LFQ <- cbind(data_unique["Gene.names"], data_unique[LFQ])
+          #Proteins=data_unique["Gene.names"]
+          #write.table(file = "file.txt", Proteins , sep = "\t", quote = FALSE) 
+          #is.element("Q9VY92", Proteins)
+data_LFQ %>% 
+  select(ends_with(".wt.") || ends_with("Gene.names") ) %>%
+      subset(Gene.names =="Muc11A" || Gene.names=="CG12264") %>%
+      gather("Muc11A", "CG12264", 1:4) -> data_wt
+data_LFQ %>% 
+  select(ends_with(".FLAG.") || ends_with("Gene.names") ) %>%
+  subset(Gene.names =="Muc11A" || Gene.names=="CG12264") %>%
+  gather("Muc11A", "CG12264", 1:4) -> data_FLAG
+data_LFQ %>% 
+  select(ends_with(".K.") || ends_with("Gene.names") ) %>%
+  subset(Gene.names =="Muc11A" || Gene.names=="CG12264") %>%
+  gather("Muc11A", "CG12264", 1:4) -> data_K
+data_LFQ %>% 
+  select(ends_with(".F.") || ends_with("Gene.names") ) %>%
+  subset(Gene.names =="Muc11A" || Gene.names=="CG12264") %>%
+  gather("Muc11A", "CG12264", 1:4) -> data_F
+
+
+model_wt <- lm("CG12264" ~ "Muc11A", data_wt)
+R_wt<-summary(model)$r.squared
+model_FLAG <- lm("CG12264" ~ "Muc11A", data_FLAG)
+R_FLAG<-summary(model)$r.squared
+model_K <- lm("CG12264" ~ "Muc11A", data_K)
+R_K<-summary(model)$r.squared
+model_F <- lm("CG12264" ~ "Muc11A", data_F)
+R_F<-summary(model)$r.squared
+
+R<- cbind(R_wt, R_FLAG, R_K, R_F)
+R_values <- data.frame(R)
+colnames(R) <- c("R^2_wt", "R^2_FLAG", "R^2_K", "R^2_F")
+
+
   
