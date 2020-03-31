@@ -282,18 +282,24 @@ data_LFQ[data_LFQ == 0] <- NA
 d_LFQ <- drop_na(data_LFQ)
 R_values <- data.frame(1)
 
-for(i in 1:10){
+for(i in c(1:dim(d_LFQ)[1])){
+  #i <- 1
   d<-d_LFQ[i,]
-  zeile <- d["Majority.protein.IDs"]
+  zeile <- d[,"Majority.protein.IDs"]#Spalte undefiniert; hier noch data.frame, würde funktionieren, wenn named vector
+  if(zeile == "Q9VKD3"){
+    R_values <- rbind(R_values, c(NA,NA))
+    }
+  else {
   #print(zeile)
-housekeeping(zeile)
-R_values <- rbind(mean_R)
-  }
+  mean_R <- housekeeping(zeile) # Muss in Variable gespeichert werden
+  #print(c(as.character(zeile), mean_R))
+  R_values <- rbind(R_values, c(zeile, mean_R)) 
+  }# An vorherige Werte anhängen
+}
 
-# vorschlag fürs filtern der größten 5
-
-R_values <- sort(decreasing = TRUE)
-R_values[1:5]
+colnames(R_values) <- c("zeilen", "R")
+ R_final <- arrange(R_values, desc(R))
+R_final[1:5,]
 
 
 
