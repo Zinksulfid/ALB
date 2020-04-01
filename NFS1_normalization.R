@@ -60,3 +60,25 @@ plot_heatmap(dep, type = "centered", kmeans = TRUE,
              k = 6, col_limit = 4, show_row_names = FALSE,
              indicate = c("condition", "replicate"))
 plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
+
+#regression curves
+
+data <- assay(data_filt)
+df <- data.frame(data)
+NFS1 <- c("CG12264")
+name.to.keep <- c("CG30022", "Jafrac1", "RpS19a", "Hsp60", "alpha-Spec")
+df_final <- subset(df, row.names(df) %in% name.to.keep) 
+df_NFS1 <- subset(df, row.names(df) %in% NFS1)
+df_NFS1 <- gather (df_NFS1, "A", "B")
+df_plot <- gather(df_final, "A", "B" )
+df_plot_f <- full_join(df_plot, df_NFS1, by = "A")# by= "A")
+df_plot_f <- cbind(df_plot_f, rep(name.to.keep,16))
+colnames (df_plot_f) <- c("sample", "value", "NFS1", "protein")
+#cairo.pdf("regression.pdf")
+ggplot(df_plot_f, aes(x =value , y = NFS1)) +
+  geom_point()+
+  facet_grid( sample ~ protein) 
+#dev.off()
+
+
+
