@@ -83,5 +83,154 @@ ggplot(df_plot_N, aes(x =value , y = NFS1)) +
   facet_grid( sample ~ protein, scale="free") 
 #dev.off()
 
+# neue normalisierung unter Berücksichtigung der Steigung 
+library("dplyr")
+library("ggplot2")
+library("DEP")
+library("tidyr")
+        
+proteinGroups <- read.table("proteinGroups.txt", header = TRUE, sep="\t")
+data <- filter(proteinGroups, Reverse != "+", Potential.contaminant != "+")
+
+data$Gene.names %>% duplicated() %>% any()
+data %>% group_by(Gene.names) %>% summarize(frequency = n()) %>% 
+  arrange(desc(frequency)) %>% filter(frequency > 1)
+data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
+data$name %>% duplicated() %>% any()
+LFQ <- grep("LFQ.", colnames(data_unique))
+data_LFQ <- cbind(data_unique["Majority.protein.IDs"], data_unique[LFQ])
+data_LFQ[data_LFQ == 0] <- NA
+d_LFQ <- drop_na(data_LFQ)
+R_values <- data.frame(1,2)
+S_values <- data.frame(1,2)
+
+# funktion 1 -> sort for R value
+housekeeping <- function (zeile) {
+  d_LFQ %>% 
+    select(matches(".wt.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("protein", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_wt
+  colnames(data_wt) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".FLAG.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_FLAG
+  colnames(data_FLAG) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".K.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_K
+  colnames(data_K) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches("F.$") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4)%>%
+    spread("Majority.protein.IDs", "CG12264") -> data_F
+  colnames(data_F) <- c("LFQ", "NFS1", "Protein")
+  
+  
+  model_wt <- lm(NFS1 ~ Protein, data= data_wt)
+  R_wt<-summary(model_wt)$r.squared
+  model_FLAG <- lm(NFS1 ~ Protein, data_FLAG)
+  R_FLAG<-summary(model_FLAG)$r.squared
+  model_K <- lm(NFS1 ~ Protein, data_K)
+  R_K<-summary(model_K)$r.squared
+  model_F <- lm(NFS1 ~ Protein, data_F)
+  R_F<-summary(model_F)$r.squared
+  
+  vec <- c( R_wt, R_FLAG, R_K, R_F)
+  mean_R <- mean(vec)
+  
+  
+  return(mean_R)
+}
+
+for(i in c(1:dim(d_LFQ)[1])){
+  #i <- 1
+  d<-d_LFQ[i,]
+  zeile <- d[,"Majority.protein.IDs"]#Spalte undefiniert; hier noch data.frame, würde funktionieren, wenn named vector
+  if(zeile == "Q9VKD3"){
+    R_values <- rbind(R_values, c(NA,NA))
+  }
+  else {
+    #print(zeile)
+    mean_R <- housekeeping(zeile) # Muss in Variable gespeichert werden
+    #print(c(as.character(zeile), mean_R))
+    R_values <- rbind(R_values, c(as.character(zeile), mean_R)) 
+  }
+}
+
+colnames(R_values) <- c("zeilen", "R")
+
+#funktion 2 -> kontrolle der Steigung
+steigung <- function (zeile) {
+  d_LFQ %>% 
+    select(matches(".wt.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("protein", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_wt
+  colnames(data_wt) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".FLAG.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs == zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_FLAG
+  colnames(data_FLAG) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches(".K.") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4) %>%
+    spread("Majority.protein.IDs", "CG12264") -> data_K
+  colnames(data_K) <- c("LFQ", "NFS1", "Protein")
+  d_LFQ %>% 
+    select(matches("F.$") | ends_with("Majority.protein.IDs") ) %>%
+    subset(Majority.protein.IDs ==zeile | Majority.protein.IDs=="Q9VKD3") %>%
+    gather("Muc11A", "CG12264", 1:4)%>%
+    spread("Majority.protein.IDs", "CG12264") -> data_F
+  colnames(data_F) <- c("LFQ", "NFS1", "Protein")
+  
+  
+  model_wt <- lm(NFS1 ~ Protein, data= data_wt)
+  S_wt<-summary(model_wt)$coefficients[2] 
+  model_FLAG <- lm(NFS1 ~ Protein, data_FLAG)
+  S_FLAG<-summary(model_FLAG)$coefficients[2] 
+  model_K <- lm(NFS1 ~ Protein, data_K)
+  S_K<-summary(model_K)$coefficients[2] 
+  model_F <- lm(NFS1 ~ Protein, data_F)
+  S_F<-summary(model_F)$coefficients[2] 
+  
+  if(S_F > 0 & S_wt >0 & S_K > 0 & S_FLAG >0) {
+    S=TRUE
+  }
+  else{
+    S=FALSE
+  }
+  return(S)
+}
+
+for(i in c(1:dim(d_LFQ)[1])){
+  #i <- 1
+  d<-d_LFQ[i,]
+  zeile <- d[,"Majority.protein.IDs"]#Spalte undefiniert; hier noch data.frame, würde funktionieren, wenn named vector
+  if(zeile == "Q9VKD3"){
+    S_values <- rbind(S_values, c(NA,NA))
+  }
+  else {
+    #print(zeile)
+    S <- steigung(zeile)
+    # Muss in Variable gespeichert werden
+    #print(c(as.character(zeile), mean_R))
+    S_values <- rbind(S_values, c(as.character(zeile), S)) 
+  }
+}
+colnames(S_values) <- c("zeilen", "S")
+data_S_R <- full_join (R_values, S_values, by = zeilen)
+data_final <- subset (data_S_R, S_values == TRUE)
+data_final <- arrange(R_values, desc(R))
+data_final[1:5,]
+
 
 
