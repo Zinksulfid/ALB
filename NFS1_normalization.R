@@ -228,8 +228,8 @@ for(i in c(1:dim(d_LFQ)[1])){
 }
 colnames(S_values) <- c("zeilen", "S")
 data_S_R <- full_join (R_values, S_values, by = zeilen)
-data_final <- subset (data_S_R, S_values == TRUE)
-data_final <- arrange(R_values, desc(R))
+data_sub <- subset (data_S_R, S_values == TRUE)
+data_final <- arrange(data_sub, desc(R))
 data_final[1:5,]
 
 
