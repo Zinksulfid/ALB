@@ -74,10 +74,13 @@ df_plot <- gather(df_final, "A", "B" )
 df_plot_f <- full_join(df_plot, df_NFS1, by = "A")# by= "A")
 df_plot_f <- cbind(df_plot_f, rep(name.to.keep,16))
 colnames (df_plot_f) <- c("sample", "value", "NFS1", "protein")
+df_plot_f %>%
+  mutate(sample = str_replace(sample, "_.", "")) -> df_plot_N
 #cairo.pdf("regression.pdf")
-ggplot(df_plot_f, aes(x =value , y = NFS1)) +
+ggplot(df_plot_N, aes(x =value , y = NFS1)) +
   geom_point()+
-  facet_grid( sample ~ protein) 
+  geom_smooth(method='lm', formula= y ~ x)
+  facet_grid( sample ~ protein, scale="free") 
 #dev.off()
 
 
