@@ -419,5 +419,26 @@ plot_heatmap(dep, type = "centered", kmeans = TRUE,
 plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
 
 
+#eigener volcanoplot
+data_results <- get_results(dep)
+data_results %>%
+  select(matches(".ratio")) -> data_ratio
+data_r <- log2(data_ratio)
+data_rf <- gather(data_r, "sample1", "ratio")
+data_rf <- cbind(data_rf, data_results[,1])
+colnames(data_rf) <- c("sampler", "ratio", "protein")
+data_results %>%
+  select(matches(".p.adj")) -> data_p_value
+data_p <- -log10(data_p_value)
+data_pf <- gather(data_p, "sample", "pval")
+data_pf <- cbind(data_pf, data_results[,1])
+colnames(data_pf) <- c("samplep", "pval", "protein")
+data_final <- full_join (data_pf, data_rf, by = "protein")
+ggplot(data_final, aes(x = ratio, y = pval)) +
+  geom_point()+
+  facet_wrap(~ samplep, ncol=3)+
+  xlab("log2 Fold change")+
+  ylab("-log10 p-value")
+
 
 
