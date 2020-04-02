@@ -420,30 +420,50 @@ plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
 
 
 #eigener volcanoplot
+Interactome <- read.csv("Fly_Interactome_curated.csv", header=TRUE, sep=",")
+data_int <- Interactome [,1] 
+
 data_results <- get_results(dep)
+data_results$Gene.ID <- mapIds(org.Dm.eg.db, keys=str_replace_all(data_results$ID, ";.*", ""),
+                              column="ENSEMBL", keytype="UNIPROT",  multiVals="first")
 data_results %>%
   select(matches(".ratio")) -> data_ratio
 #data_r <- log2(data_ratio)
 data_rf <- gather(data_ratio, "sample1", "ratio")
-data_rf <- cbind(data_rf, data_results[,1])
+data_rf <- cbind(data_rf, data_results$Gene.ID)
 colnames(data_rf) <- c("sampler", "ratio", "protein")
 data_results %>%
   select(matches(".p.val")) -> data_p_value
 data_p <- -log10(data_p_value)
 data_pf <- gather(data_p, "sample", "pval")
-data_pf <- cbind(data_pf, data_results[,1])
+data_pf <- cbind(data_pf, data_results$Gene.ID)
 colnames(data_pf) <- c("samplep", "pval", "protein")
 data_results %>%
   select(matches(".significant")) -> data_significant
 data_s <- gather(data_significant, "sample", "pval")
-data_sf <- cbind(data_s, data_results[,1])
+data_sf <- cbind(data_s, data_results$Gene.ID)
 colnames(data_sf) <- c("samples", "significant", "protein")
 data_final <- full_join (data_pf, data_rf, by = "protein")
 data_final <- full_join (data_final, data_sf, by = "protein")
 data_final %>%
   mutate(samplep = str_replace(samplep, "._pval", " ")) -> data_plot
+mit <- data.frame()
+#colnames(mit) <- c( "Mitochondrial protein")
+for(i in c(1:dim(data_final)[1])){
+  if(is.element(data_final[i,3], data_int)){
+    mit <- rbind(mit, TRUE)
+  }
+  else {
+    #print(zeile)
+    # Muss in Variable gespeichert werden
+    #print(c(as.character(zeile), mean_R))
+    mit <- rbind(mit, FALSE) 
+  }
+}
+colnames(mit) <- c( "Mitochondrial_protein")
+data_plot <- cbind(data_final, mit)
 cairo_pdf("volcano_plot.pdf", 15,5)
-ggplot(data_plot, aes(x = ratio, y = pval, color=significant)) +
+ggplot(data_plot, aes(x = ratio, y = pval, color=significant,shape=Mitochondrial_protein ))+# shape= mitochondrial protein)) +
   geom_point()+
   facet_wrap(~ samplep, ncol=3)+
   xlab("log2 Fold change")+
@@ -452,6 +472,10 @@ ggplot(data_plot, aes(x = ratio, y = pval, color=significant)) +
   theme_bw()+
   scale_color_manual(values=c("#999999", "#E69F00"))
 dev.off()
+  
+
+
+
 
 
 
