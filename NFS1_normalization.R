@@ -423,22 +423,35 @@ plot_volcano(dep, contrast = "F_vs_wt", label_size = 2, add_names = TRUE)
 data_results <- get_results(dep)
 data_results %>%
   select(matches(".ratio")) -> data_ratio
-data_r <- log2(data_ratio)
-data_rf <- gather(data_r, "sample1", "ratio")
+#data_r <- log2(data_ratio)
+data_rf <- gather(data_ratio, "sample1", "ratio")
 data_rf <- cbind(data_rf, data_results[,1])
 colnames(data_rf) <- c("sampler", "ratio", "protein")
 data_results %>%
-  select(matches(".p.adj")) -> data_p_value
+  select(matches(".p.val")) -> data_p_value
 data_p <- -log10(data_p_value)
 data_pf <- gather(data_p, "sample", "pval")
 data_pf <- cbind(data_pf, data_results[,1])
 colnames(data_pf) <- c("samplep", "pval", "protein")
+data_results %>%
+  select(matches(".significant")) -> data_significant
+data_s <- gather(data_significant, "sample", "pval")
+data_sf <- cbind(data_s, data_results[,1])
+colnames(data_sf) <- c("samples", "significant", "protein")
 data_final <- full_join (data_pf, data_rf, by = "protein")
-ggplot(data_final, aes(x = ratio, y = pval)) +
+data_final <- full_join (data_final, data_sf, by = "protein")
+data_final %>%
+  mutate(samplep = str_replace(samplep, "._pval", " ")) -> data_plot
+cairo_pdf("volcano_plot.pdf", 15,5)
+ggplot(data_plot, aes(x = ratio, y = pval, color=significant)) +
   geom_point()+
   facet_wrap(~ samplep, ncol=3)+
   xlab("log2 Fold change")+
-  ylab("-log10 p-value")
+  ylab("-log10 p-value")+
+  geom_line(aes(x=0), colour="#990000")+
+  theme_bw()+
+  scale_color_manual(values=c("#999999", "#E69F00"))
+dev.off()
 
 
 
