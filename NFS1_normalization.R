@@ -427,20 +427,20 @@ data_results <- get_results(dep)
 data_results$Gene.ID <- mapIds(org.Dm.eg.db, keys=str_replace_all(data_results$ID, ";.*", ""),
                               column="ENSEMBL", keytype="UNIPROT",  multiVals="first")
 data_results %>%
-  select(matches(".ratio")) -> data_ratio
+  dplyr::select(matches(".ratio")) -> data_ratio
 #data_r <- log2(data_ratio)
-data_rf <- gather(data_ratio, "sample1", "ratio")
+data_rf <- tidyr::gather(data_ratio, "sample1", "ratio")
 data_rf <- cbind(data_rf, data_results$Gene.ID)
 colnames(data_rf) <- c("sampler", "ratio", "protein")
 data_results %>%
-  select(matches(".p.val")) -> data_p_value
+  dplyr::select(matches(".p.val")) -> data_p_value
 data_p <- -log10(data_p_value)
-data_pf <- gather(data_p, "sample", "pval")
+data_pf <- tidyr::gather(data_p, "sample", "pval")
 data_pf <- cbind(data_pf, data_results$Gene.ID)
 colnames(data_pf) <- c("samplep", "pval", "protein")
 data_results %>%
-  select(matches(".significant")) -> data_significant
-data_s <- gather(data_significant, "sample", "pval")
+  dplyr::select(matches(".significant")) -> data_significant
+data_s <- tidyr::gather(data_significant, "sample", "pval")
 data_sf <- cbind(data_s, data_results$Gene.ID)
 colnames(data_sf) <- c("samples", "significant", "protein")
 data_final <- full_join (data_pf, data_rf, by = "protein")
@@ -463,15 +463,17 @@ for(i in c(1:dim(data_final)[1])){
 colnames(mit) <- c( "Mitochondrial_protein")
 data_plot <- cbind(data_final, mit)
 cairo_pdf("volcano_plot.pdf", 15,5)
-ggplot(data_plot, aes(x = ratio, y = pval, color=significant,shape=Mitochondrial_protein ))+# shape= mitochondrial protein)) +
-  geom_point()+
+ggplot(data_plot, aes(x = ratio, y = pval, color=significant, shape=Mitochondrial_protein ))+# shape= mitochondrial protein)) +
+  geom_point()+#color = ifelse(data_plot$significant == TRUE, "red", "grey50"), shape= ifelse(data_plot$Mitochondrial_protein == TRUE, 15, 16))+
   facet_wrap(~ samplep, ncol=3)+
   xlab("log2 Fold change")+
   ylab("-log10 p-value")+
   geom_line(aes(x=0), colour="#990000")+
   theme_bw()+
-  scale_color_manual(values=c("#999999", "#E69F00"))
+  scale_color_manual(values=c("#999999", "#E69F00"))+
+  geom_label_repel(data=significant, aes(x = ratio, y =pval, label=protein)) 
 dev.off()
+  
   
 
 
