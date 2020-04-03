@@ -459,7 +459,7 @@ for(i in c(1:dim(data_final)[1])){
 }
 colnames(mit) <- c( "Mitochondrial_protein")
 data_plot <- cbind(data_final, mit)
-#cairo_pdf("volcano_plot.pdf", 15,5)
+cairo_pdf("volcano_plot.pdf", 15,5)
 ggplot(data_plot, aes(x = ratio, y = pval, color=significant,  shape=Mitochondrial_protein ))+# shape= mitochondrial protein)) +
   geom_point()+#color = ifelse(data_plot$significant == TRUE, "orange", "grey50")), shape= ifelse(data_plot$Mitochondrial_protein == TRUE, 15, 16))+
   facet_wrap(~ samplep, ncol=3)+
@@ -468,9 +468,12 @@ ggplot(data_plot, aes(x = ratio, y = pval, color=significant,  shape=Mitochondri
   geom_line(aes(x=0), colour="#990000")+
   theme_bw()+
   scale_color_manual(values=c("#999999", "#E69F00"))+
-  geom_label_repel(data = subset(data_plot, significant== TRUE), aes(label=protein),   segment.size  = 0.2,
-                   segment.color = "grey50", size=1)#data=significant, aes(x = ratio, y =pval, label=protein)) 
-#dev.off()
+  geom_label_repel(data = subset(data_plot, significant== TRUE & mit== TRUE), aes(label=protein), size=1.5)#data=significant, aes(x = ratio, y =pval, label=protein)) 
+dev.off()
+
+data_sig1 <- subset(data_plot, significant == TRUE & mit == TRUE) 
+data_sig <- dplyr::select(data_sig1, protein) 
+write.table(file = "sig.proteine.txt", data_sig, sep = "\t", quote = FALSE)
   
   
 
